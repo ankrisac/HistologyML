@@ -1,0 +1,746 @@
+#:kivy 1.10.0
+#:import color src.color
+#:import util src.util
+
+<Widget>:
+    font_name: 'Roboto-Bold'
+    font_size: 16
+
+<Spacer@Widget>:
+    size_hint: 1, 1
+
+<HSpacer@Widget>:
+    size_hint: 1, None
+
+<VSpacer@Widget>:
+    size_hint: None, 1
+    
+<HDivider@Widget>:
+    size_hint: 1, None
+    height: 3
+
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, .08
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<LeftLabel@Label>:
+    font_name: 'Roboto'
+    size_hint: None, None
+    color: .4, .4, .4, 1
+    halign: 'left'
+
+    on_texture_size:
+        self.width = 40 + self.texture.width
+        self.height = self.texture.height
+
+<TextButton@Button>:
+    background_normal: ''
+    background_color: 0, 0, 0, 0
+
+    size_hint: None, None
+    bold: True
+    color: color.B4 if self.state == 'normal' else color.B3
+
+    halign: 'left'
+
+    canvas.before:
+        Color:
+            rgba: (0, 0, 0, .01) if self.state != 'normal' else (0, 0, 0, 0)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+
+    on_texture_size:
+        self.width = 40 + self.texture.width
+        self.height = self.texture.height
+
+
+<Card@BoxLayout>:
+    size_hint: None, None
+    
+    orientation: 'vertical'
+
+    background_color: 0, 0, 0, 0
+    bg_color: 1, 1, 1, 1
+
+    radius: 20
+    canvas.before:
+        Rectangle:
+            size: self.size[0] + 2 * self.radius, self.size[1] + 2 * self.radius
+            pos: self.pos[0] - self.radius, self.pos[1] - 1.5 * self.radius
+            texture: color.createBoxShadow(self.size[0] + self.radius, self.size[1] + self.radius, 0.8 * self.radius, 0.4)
+
+        Color:
+            rgba: self.bg_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<Chip@BoxLayout>:
+    size_hint: None, None
+    height: self.minimum_height
+    width: self.minimum_width
+
+    radius: 5
+
+    selected: True
+    text: ''
+
+    canvas.before:
+        Rectangle:
+            size: self.size[0] + 2 * self.radius, self.size[1] + 2 * self.radius
+            pos: self.pos[0] - self.radius, self.pos[1] - 1.5 * self.radius
+            texture: color.createBoxShadow(self.size[0] + self.radius, self.size[1] + self.radius, self.radius, 0.3)
+        Color:
+            rgb: (.85, .85, .85) if self.selected else (.95, .95, .95)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [4]
+
+<ChipInput@Chip>:
+    padding: [10, 0, 5, 0]
+    spacing: 0
+
+    hint_text: ''
+    TextInput:
+        id: input
+        background: ''
+        background_color: 0, 0, 0, 0
+
+        multiline: False
+
+        font_name: 'Roboto'
+        size_hint: None, None
+        size: 80, self.minimum_height - 2
+
+        hint_text: self.hint_text
+
+        on_text_validate:
+            root.submit()
+        on_text:
+            self.width = max(80, 20 + self._lines_labels[0].size[0] if self._lines_labels else 0)            
+        canvas.before:
+            Color:
+                rgb: .4, .4, .4
+
+<ChipInputAdder@Chip>:
+    padding: [10, 0, 5, 0]
+    spacing: 0
+
+    hint_text: ''
+
+    TextInput:
+        id: input
+        background: ''
+        background_color: 0, 0, 0, 0
+
+        multiline: False
+
+        font_name: 'Roboto'
+        size_hint: None, None
+        size: 80, self.minimum_height - 2
+
+        hint_text: self.hint_text
+
+        on_text_validate:
+            root.submit()
+        on_text:
+            self.width = max(80, 20 + self._lines_labels[0].size[0] if self._lines_labels else 0)            
+        canvas.before:
+            Color:
+                rgb: .4, .4, .4
+
+    Button:
+        size_hint: None, 1
+        width: self.height
+
+        background_normal: ''
+        background_color: 0, 0, 0, 0
+
+        canvas.before:
+            Color:
+                rgba: (.6, .6, .6, 1) if self.state == 'normal' else (.5, .5, .5, 1)
+            Line:
+                points: [self.pos[0] + self.height * .3, self.pos[1] + self.height * .5, self.pos[0] + self.height * .7, self.pos[1] + self.height * .5]
+                width: self.height / 20
+                cap: 'square'
+            Line:
+                points: [self.pos[0] + self.height * .5, self.pos[1] + self.height * .3, self.pos[0] + self.height * .5, self.pos[1] + self.height * .7]
+                width: self.height / 20
+                cap: 'square'
+        on_press:
+            root.submit()
+
+<ChipRemovable@Chip>:
+    selected: False
+
+    padding: [10, 5, 5, 5]
+    spacing: 10
+
+    Label:
+        font_name: 'Roboto'
+        size_hint: None, None
+        color: .4, .4, .4, 1
+        halign: 'left'
+
+        text: root.text
+
+        on_texture_size:
+            self.size = self.texture.size
+
+    Button:
+        id: btn_remove
+
+        size_hint: None, 1
+        width: self.height
+
+        background_normal: ''
+        background_color: 0, 0, 0, 0
+
+        canvas.before:
+            Color:
+                rgba: (.6, .6, .6, 1) if self.state == 'normal' else (.5, .5, .5, 1)
+            Line:
+                points: [self.pos[0] + self.height * .3, self.pos[1] + self.height * .3, self.pos[0] + self.height * .7, self.pos[1] + self.height * .7]
+                width: self.height / 20
+            Line:
+                points: [self.pos[0] + self.height * .3, self.pos[1] + self.height * .7, self.pos[0] + self.height * .7, self.pos[1] + self.height * .3]
+                width: self.height / 20
+        
+        on_press:
+            root.remove()
+
+
+<Body@Card>:
+    orientation: 'vertical'
+    size_hint: 1, None
+    pos_hint: { 'center_x': .5, 'center_y': .5 }
+    
+    padding: 20
+    spacing: 20
+
+<HPage@ScrollView>:
+    do_scroll_x: False
+    do_scroll_y: True
+<HPageBox@BoxLayout>:
+    orientation: 'vertical'
+    size_hint: 1, None
+    height: self.minimum_height
+    padding: 20
+<HPageBody@Body>:
+    height: self.minimum_height
+<HTitle@Label>:
+    size_hint: 1, None
+    height: 40
+    color: .4, .4, .4, 1
+    font_name: 'RobotoMono-Regular'
+<HStack@StackLayout>:
+    size_hint: 1, None
+    height: self.minimum_height
+    spacing: 10
+
+
+
+<FileChooserListView>:
+    layout: layout
+    FileChooserListLayout:
+        id: layout
+        controller: root
+
+[FileListEntry@FloatLayout+TreeViewNode]:
+    locked: False
+    entries: []
+    path: ctx.path
+    is_selected: self.path in ctx.controller().selection
+
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '48dp' if dp(1) > 1 else '24dp'
+    is_leaf: not ctx.isdir or ctx.name.endswith('..' + ctx.sep) or self.locked
+    on_touch_down: self.collide_point(*args[1].pos) and ctx.controller().entry_touched(self, args[1])
+    on_touch_up: self.collide_point(*args[1].pos) and ctx.controller().entry_released(self, args[1])
+    BoxLayout:
+        pos: root.pos
+        size_hint_x: None
+        width: root.width - dp(10)
+
+        Label:
+            color: .4, .4, .4, 1
+            id: filename
+            text_size: self.width, None
+            halign: 'left'
+            shorten: True
+            text: ctx.name
+        Label:
+            color: .4, .4, .4, 1
+            text_size: self.width, None
+            size_hint_x: None
+            halign: 'right'
+            text: '{}'.format(ctx.get_nice_size())
+
+<PopupFileLoader>:
+    size_hint: None, None
+    size: 500, 500
+
+    title: ''
+    title_color: .4, .4, .4, 1
+
+    background: ''
+    background_color: 0, 0, 0, 0
+    separator_height: 0
+
+    radius: 10
+    file_path: None
+
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            size: self.size[0] + 2 * self.radius, self.size[1] + 2 * self.radius
+            pos: self.pos[0] - self.radius, self.pos[1] - 2 * self.radius
+            texture: color.createBoxShadow(self.size[0] + self.radius, self.size[1] + self.radius, self.radius, 0.4)
+
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserListView:
+            id: file_chooser
+            color: 0, 0, 0, 1
+ 
+            dirselect: True
+            path: util.samples_dir
+ 
+            on_selection:
+                root.selectFile(args[1])
+            on_submit:
+                root.submitFile()
+        BoxLayout:
+            size_hint: 1, None
+            height: self.minimum_height + 10
+
+            TextButton:
+                text: 'SELECT'
+                on_press:
+                    root.submitFile()
+            TextButton:
+                text: 'CLOSE'
+                on_press:
+                    root.dismiss()
+
+
+
+
+<ScreenCard@Card>:
+    width: min(600, self.parent.width - 40)
+
+    padding: 20
+    spacing: 8
+
+<StartScreenLabel@Label>:
+    size_hint: None, None
+    bold: True
+    color: .4, .4, .4, 1
+
+    halign: 'left'
+
+    on_texture_size:
+        self.width = 40 + (self.texture.width if self.text else 0)
+        self.height = self.texture.height
+
+<SpaceStart>:
+    HPage:
+        HPageBox:
+            HPageBody:
+                pos_hint: { 'center_x': .5, 'center_y': .5 }
+
+                size_hint: None, None
+                width: min(900, 0.8 * root.width)
+                height: max(0.9 * root.height, self.minimum_height)
+
+                HTitle:
+                    font_size: 40
+                    text: 'APOS'
+                HTitle:
+                    font_name: 'Roboto'
+                    color: color.B3
+                    font_size: 20
+                    bold: True
+                    text: 'Advanced Pathology OS'
+
+                ScreenCard:
+                    height: 130
+                    StartScreenLabel:
+                        text: 'START'
+                        
+                    HSpacer:
+                        height: 3
+                    TextButton:
+                        text: 'Create slide'
+                        on_press:
+                            app.root.ids.workspace.transition.direction = 'left'
+                            app.root.ids.workspace.current = 'screen_createslide'
+                    TextButton:
+                        text: 'Analyze slide'
+                        on_press:
+                            app.root.ids.workspace.transition.direction = 'left'
+                            app.root.ids.workspace.current = 'screen_analyze'
+                    Spacer:
+
+                ScreenCard:
+                    height: 130
+                    StartScreenLabel:
+                        text: 'TRAIN'
+                    HSpacer:
+                        height: 3
+                    TextButton:
+                        text: 'Create disease filter'
+                        on_press:
+                            app.root.ids.workspace.transition.direction = 'right'
+                            app.root.ids.workspace.current = 'screen_train'
+                    TextButton:
+                        text: 'Categorize training data'
+                        on_press:
+                            app.root.ids.workspace.transition.direction = 'right'
+                            app.root.ids.workspace.current = 'screen_categorize'
+                    Spacer:
+                
+                ScreenCard:
+                    height: 100
+                
+                    StartScreenLabel:
+                        text: 'MISCELLANEOUS'
+                    HSpacer:
+                        height: 3
+                    TextButton: 
+                        text: 'System Info'
+                        on_press:
+                            app.root.ids.workspace.transition.direction = 'up'
+                            app.root.ids.workspace.current = 'screen_credits'
+                    Spacer:
+
+                Spacer:
+
+                LeftLabel:
+                    font_size: 13
+                    font_name: 'RobotoMono-Regular'
+                    text: util.app_creators
+
+
+
+<ReturnToMain@TextButton>:
+    text: 'BACK'
+    dir: 'right'
+
+    on_press:
+        app.root.ids.workspace.transition.direction = self.dir
+        app.root.ids.workspace.current = 'screen_start'
+
+<SpaceCreateSlide>:
+    HPage:
+        HPageBox:
+            HPageBody:
+                TextButton:
+                    text: 'BACK'
+                    on_press:
+                        app.root.ids.workspace.current = 'screen_start'
+                        app.root.ids.workspace.transition.direction = 'right'
+
+                HTitle:
+                    text: 'Create Slide'
+                HDivider:
+
+                ImagePlot:
+                    size: 600, 600
+                    id: plot
+                
+                HDivider:
+
+                HStack:
+                    LeftLabel:
+                        text: 'IP address'
+                    ChipInput:
+                        hint_text: 'Ip Address'
+                        callback: root.set_ip
+                
+                HStack:
+                    TextButton:
+                        id: btn_start
+                        text: 'Start Webcam'
+                        on_press:
+                            root.toggle_webcam()
+                    TextButton:
+                        text: 'Capture Image'
+                        on_press:
+                            root.capture()
+<FilterApply>:
+    size_hint: None, None
+    size: 400, 80
+
+    radius: 8
+    padding: 5
+
+    text: ''
+
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            size: self.size[0] + 2 * self.radius, self.size[1] + 2 * self.radius
+            pos: self.pos[0] - self.radius, self.pos[1] - 1.5 * self.radius
+            texture: color.createBoxShadow(self.size[0] + self.radius, self.size[1] + self.radius, 0.8 * self.radius, 0.3)
+        
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    LeftLabel:
+        font_name: 'RobotoMono-Regular'
+
+        color: .4, .4, .4, 1
+        text: root.text
+    
+    HSpacer:
+        height: 10
+    HStack:
+        TextButton:
+            id: btn_train
+            text: 'Analyze'
+            on_press:
+                root.analysis_callback()
+        TextButton:
+            id: btn_reset
+            text: 'Reset'
+            on_press:
+                root.reset()
+ 
+
+
+<SpaceAnalyze>:
+    HPage:
+        HPageBox:
+            HPageBody:
+                TextButton:
+                    text: 'BACK'
+                        
+                    on_press:
+                        app.root.ids.workspace.transition.direction = 'right'
+                        app.root.ids.workspace.current = 'screen_start'
+
+                HTitle:
+                    text: 'Analyze Slide'
+
+                HDivider:
+
+                HStack:
+                    ImageLoader:
+                        size: 450, 450    
+                        id: slide
+                    ImagePlot:
+                        size: 450, 450    
+                        id: sub_sample
+
+                TextButton:
+                    text: 'Select Slide'
+                    on_press:
+                        root.ids.slide.popup_selectImage()
+
+                HDivider:
+
+                LeftLabel:
+                    font_name: 'RobotoMono-Regular'
+                    text: 'REPORT'
+                    bold: True
+                LeftLabel:
+                    font_name: 'RobotoMono-Regular'
+                    id: info
+                    text: ''
+    
+                HDivider:
+
+                TextButton:
+                    text: 'Reload Filters'
+                    on_press:
+                        root.loadFilters()
+                HStack:
+                    id: filter_list
+
+<FilterTrain>:
+    size_hint: None, None
+    size: 600, 400
+
+    radius: 8
+    padding: 5
+
+    text: ''
+
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            size: self.size[0] + 2 * self.radius, self.size[1] + 2 * self.radius
+            pos: self.pos[0] - self.radius, self.pos[1] - 1.5 * self.radius
+            texture: color.createBoxShadow(self.size[0] + self.radius, self.size[1] + self.radius, 0.8 * self.radius, 0.3)
+        
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    LeftLabel:
+        font_name: 'RobotoMono-Regular'
+
+        color: .4, .4, .4, 1
+        text: root.text
+
+    HSpacer:
+        height: 10
+    HStack:
+        TextButton:
+            id: btn_train
+            text: 'Train'
+            on_press:
+                root.train()
+                root.ids.btn_save.text = 'Save'
+        TextButton:
+            id: btn_save
+            text: ''
+            on_press:
+                text: 'Saving ...'
+                root.save()
+        
+<SpaceTrain>:
+    HPage:
+        HPageBox:
+            HPageBody:
+                ReturnToMain:
+                    dir: 'left'
+
+                HTitle:
+                    text: 'Create Filter'
+            
+                HDivider:
+            
+                HStack:
+                    ImagePlot:
+                        id: plot
+
+                HStack:
+                    TextButton:
+                        text: 'Load Filters'
+                        on_press:
+                            root.load_filters()
+                
+                HDivider:
+                HStack:
+                    id: filter_editor
+
+<SpaceFixedBody@Body>:
+    size_hint: .9, .8
+    size_hint_max: 1000, 800
+    size_hint_min: 500, 500
+
+
+
+<SpaceCategorize>:
+    slide_img: None
+
+    HPage:
+        HPageBox:
+            HPageBody: 
+                TextButton:
+                    text: 'BACK'
+                    dir: 'right'
+
+                    on_press:
+                        app.root.ids.workspace.transition.direction = self.dir
+                        app.root.ids.workspace.current = 'screen_start'
+
+                HTitle:
+                    text: 'Categorize'
+                    
+                HDivider:
+
+                StackLayout:
+                    size_hint: 1, None
+                    width: self.minimum_width
+                    height: self.minimum_height
+                    spacing: 10
+                        
+                    ImageLoader:
+                        size: 350, 350
+                        id: slide
+                    
+                    ImageLoader:
+                        size: 350, 350
+                        id: sub_sample
+
+                StackLayout:
+                    size_hint: 1, None
+                    height: self.minimum_height
+
+                    TextButton:
+                        text: 'Select Image'
+                        on_press:
+                            root.load_slide()
+
+                HDivider:
+                
+                BoxLayout:
+                    id: tag_editor
+
+                    size_hint: 1, None
+                    height: self.minimum_height
+                    orientation: 'vertical'
+                    spacing: 10
+                    padding: [0, 0, 0, 10]
+
+
+                    LeftLabel:
+                        bold: True
+                        text: 'Add Tags to Subsample'
+
+                    StackLayout:
+                        id: tags
+
+                        size_hint: 1, None
+                        height: self.minimum_height
+
+                        spacing: 10
+                        padding: [20, 0, 0, 0]
+
+                        ChipInputAdder:
+                            hint_text: 'add tag'
+                            id: tag_adder
+                            callback: root.add_tag
+
+                    StackLayout:
+                        TextButton:
+                            text: 'Done'
+                            on_press:
+                                root.save_tags()
+                                root.next_sample()
+                        TextButton:
+                            text: 'Skip'
+                            on_press:
+                                root.next_sample()
+
+<SpaceCredits>:
+    SpaceFixedBody:
+        ReturnToMain:
+            dir: 'down'
+        Label:
+            color: .4, .4, .4, 1
+            text: util.app_credits
+            font_name: 'RobotoMono-Regular'
+            size_hint: 1, .5
+
+<MainWindow>:
+    title: 'MicroLab - DeepStain'
+    WorkSpace:
+        id: workspace
