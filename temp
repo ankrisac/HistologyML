@@ -1,0 +1,118 @@
+<FileChooserListView>:
+    layout: layout
+    FileChooserListLayout:
+        id: layout
+        controller: root
+
+[FileListEntry@FloatLayout+TreeViewNode]:
+    locked: False
+    entries: []
+    path: ctx.path
+    is_selected: self.path in ctx.controller().selection
+
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '48dp' if dp(1) > 1 else '24dp'
+    is_leaf: not ctx.isdir or ctx.name.endswith('..' + ctx.sep) or self.locked
+    on_touch_down: self.collide_point(*args[1].pos) and ctx.controller().entry_touched(self, args[1])
+    on_touch_up: self.collide_point(*args[1].pos) and ctx.controller().entry_released(self, args[1])
+    BoxLayout:
+        pos: root.pos
+        size_hint_x: None
+        width: root.width - dp(10)
+
+        Label:
+            color: .4, .4, .4, 1
+            id: filename
+            text_size: self.width, None
+            halign: 'left'
+            shorten: True
+            text: ctx.name
+        Label:
+            color: .4, .4, .4, 1
+            text_size: self.width, None
+            size_hint_x: None
+            halign: 'right'
+            text: '{}'.format(ctx.get_nice_size())
+
+
+
+HPage:
+    HPageBox:
+        HPageBody: 
+            TextButton:
+                text: 'BACK'
+                dir: 'right'
+
+                on_press:
+                    app.root.ids.workspace.transition.direction = self.dir
+                    app.root.ids.workspace.current = 'screen_start'
+
+            HTitle:
+                text: 'Categorize'
+                
+            HDivider:
+
+            StackLayout:
+                size_hint: 1, None
+                width: self.minimum_width
+                height: self.minimum_height
+                spacing: 10
+                    
+                ImageLoader:
+                    size: 350, 350
+                    id: slide
+                
+                ImageLoader:
+                    size: 350, 350
+                    id: sub_sample
+
+            StackLayout:
+                size_hint: 1, None
+                height: self.minimum_height
+
+                TextButton:
+                    text: 'Select Image'
+                    on_press:
+                        root.load_slide()
+
+            HDivider:
+            
+            BoxLayout:
+                id: tag_editor
+
+                size_hint: 1, None
+                height: self.minimum_height
+                orientation: 'vertical'
+                spacing: 10
+                padding: [0, 0, 0, 10]
+
+
+                LeftLabel:
+                    bold: True
+                    text: 'Add Tags to Subsample'
+
+                StackLayout:
+                    id: tags
+
+                    size_hint: 1, None
+                    height: self.minimum_height
+
+                    spacing: 10
+                    padding: [20, 0, 0, 0]
+
+                    ChipInputAdder:
+                        hint_text: 'add tag'
+                        id: tag_adder
+                        callback: root.add_tag
+
+                StackLayout:
+                    TextButton:
+                        text: 'Done'
+                        on_press:
+                            root.save_tags()
+                            root.next_sample()
+                    TextButton:
+                        text: 'Skip'
+                        on_press:
+                            root.next_sample()
