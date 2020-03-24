@@ -62,7 +62,7 @@ class ChipInputAdder(Chip):
 
 class ChipRemovable(Chip):
     def __init__(self, *args, **kwargs):
-        super(ChipRemovable, self).__init__(*args, *kwargs)
+        super(ChipRemovable, self).__init__(*args, **kwargs)
 
     def on_press(self):
         self.selected = not self.selected
@@ -77,11 +77,9 @@ class ChipRemovable(Chip):
         pass
 
 
-class Card(BoxLayout): pass
-
 class Plot(Widget):
-    def __init__(self, **kwargs):
-        super(Plot, self).__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(Plot, self).__init__(*args, **kwargs)
 
         self.orientation = 'vertical'
         self.background_color = 0, 0, 0, 0
@@ -98,8 +96,8 @@ class Plot(Widget):
         self.fig.canvas.draw()
 
 class ImagePlot(BoxLayout):
-    def __init__(self, **kwargs):
-        super(ImagePlot, self).__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ImagePlot, self).__init__(*args, **kwargs)
 
         self.orientation = 'vertical'
         self.background_color = 0, 0, 0, 0
@@ -222,7 +220,7 @@ class SpaceCreateSlide(Screen):
         self.web_cam_on = not self.web_cam_on
 
         if self.web_cam_on:
-            URL = f'http://{self.ip}:8080/video'
+            URL = f"http://{self.ip}:8080/video"
 
             if self.ip:
                 print("OPENING URL", URL)
@@ -482,7 +480,8 @@ class Filter(object):
 
 
     def train(self, plot = None):
-        Clock.schedule_once(lambda t: self.train_model(plot), 1)
+        #Clock.schedule_once(lambda t: self.train_model(plot), 1)
+        Clock.schedule_once(lambda t: self.train_model(), 1)
 
     def loadData(self):
         self.imgs = APL_Database.loadTagData(self.tag + '+ve')
@@ -822,4 +821,7 @@ class Application(App):
 Builder.load_file('src/style.kv')
 
 if __name__ == '__main__':
-    Application().run()
+    try:
+        Application().run()
+    except Exception as ex:
+        print("Error:", ex)
