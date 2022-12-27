@@ -1,4 +1,4 @@
-# apOS
+# APOS
 
 ML system designed to identify microbes in microscope slides. 
 Tested on a malaria database only
@@ -11,7 +11,3 @@ Tested on a malaria database only
 - [Matplotlib](https://matplotlib.org/) (3.1.1)
 - [OpenCV](https://opencv.org/) 
 - [Pillow](https://pillow.readthedocs.io/en/stable/) 
-
-# Name
-apOS : advanced pathology OS
-- Initially intended to be called Horus (
