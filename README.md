@@ -3,7 +3,7 @@
 ML system designed to identify microbes in microscope slides. 
 Tested on a malaria database only
 
-## Special Thanks 
+## Contributors
 - Samarth Chandna [@samarth52](https://github.com/samarth52)
 
 
